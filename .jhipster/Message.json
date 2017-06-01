@@ -1,0 +1,32 @@
+{
+    "fluentMethods": true,
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "relationshipName": "sender",
+            "otherEntityName": "user",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "relationshipName": "receiver",
+            "otherEntityName": "user",
+            "otherEntityField": "id"
+        }
+    ],
+    "fields": [
+        {
+            "fieldName": "messageText",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "sentTime",
+            "fieldType": "Instant"
+        }
+    ],
+    "changelogDate": "20170520134637",
+    "entityTableName": "message",
+    "dto": "mapstruct",
+    "pagination": "infinite-scroll",
+    "service": "no"
+}

@@ -1,0 +1,11 @@
+<a style="cursor: pointer;"
+   [routerLink] = "[friend.login]"
+   routerLinkActive="active"
+   class="list-group-item list-group-item-action flex-column align-items-start"
+>
+    <div class="d-flex w-100 justify-content-between">
+        <h6 class="mb-1">{{friend.login}}</h6>
+        <small>{{friend.messagetime | date:'shortDate'}}</small>
+    </div>
+    <small class="mb-1">{{friend.message}}</small>
+</a>
