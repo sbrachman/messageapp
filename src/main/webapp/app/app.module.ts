@@ -9,7 +9,6 @@ import { JhipmessageappHomeModule } from './home/home.module';
 import { JhipmessageappAdminModule } from './admin/admin.module';
 import { JhipmessageappAccountModule } from './account/account.module';
 import { JhipmessageappEntityModule } from './entities/entity.module';
-import { MdChipsModule } from '@angular/material';
 
 import { customHttpProvider } from './blocks/interceptor/http.provider';
 import { PaginationConfig } from './blocks/config/uib-pagination.config';
@@ -25,6 +24,7 @@ import {
 
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MessagesModule} from './messages/messages.module';
+import {MdChipsModule} from '@angular/material';
 
 @NgModule({
     imports: [
@@ -60,4 +60,3 @@ import {MessagesModule} from './messages/messages.module';
     bootstrap: [ JhiMainComponent ]
 })
 export class JhipmessageappAppModule {}
-

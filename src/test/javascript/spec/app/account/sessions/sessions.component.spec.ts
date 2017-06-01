@@ -7,14 +7,13 @@ import { SessionsService } from '../../../../../../main/webapp/app/account/sessi
 import { MockPrincipal } from '../../../helpers/mock-principal.service';
 import { Principal } from '../../../../../../main/webapp/app/shared/auth/principal.service';
 
-
 describe('Component Tests', () => {
 
     let sessions: Session[];
     let fixture: ComponentFixture<SessionsComponent>;
     let comp: SessionsComponent;
 
-    describe('SessionsComponent', function () {
+    describe('SessionsComponent', function() {
 
         beforeEach(() => {
             sessions = [new Session('xxxxxx==', new Date(2015, 10, 15), '0:0:0:0:0:0:0:1', 'Mozilla/5.0')];
@@ -29,11 +28,8 @@ describe('Component Tests', () => {
                         useClass: MockPrincipal
                     }
                 ]
-            }).overrideComponent(SessionsComponent, {
-                set: {
-                    template: ''
-                }
-            }).createComponent(SessionsComponent);
+            }).overrideTemplate(SessionsComponent, '')
+            .createComponent(SessionsComponent);
             comp = fixture.componentInstance;
         });
 

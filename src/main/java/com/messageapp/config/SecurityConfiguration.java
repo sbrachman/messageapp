@@ -44,6 +44,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public SecurityConfiguration(AuthenticationManagerBuilder authenticationManagerBuilder, UserDetailsService userDetailsService,
         JHipsterProperties jHipsterProperties, RememberMeServices rememberMeServices,
         CorsFilter corsFilter) {
+
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.userDetailsService = userDetailsService;
         this.jHipsterProperties = jHipsterProperties;

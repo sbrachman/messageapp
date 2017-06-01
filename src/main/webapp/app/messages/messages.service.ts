@@ -5,8 +5,6 @@ import { DateUtils } from 'ng-jhipster';
 import {ResponseWrapper} from '../shared/model/response-wrapper.model';
 import {Message} from './message.model';
 
-
-
 @Injectable()
 export class MessagesService {
 
@@ -28,23 +26,21 @@ export class MessagesService {
         return this.http.post(`${this.resourceUrl}/${login}`, copy).map((res: Response) => {
             const jsonResponse = res.json();
             // this.convertItemFromServer(jsonResponse);
-            return new ResponseWrapper(res.headers, jsonResponse);
+            return new ResponseWrapper(res.headers, jsonResponse, res.status);
         });
     }
-
 
     query(login: string): Observable<ResponseWrapper> {
         return this.http.get(`${this.resourceUrl}/${login}`)
             .map((res: Response) => this.convertResponse(res));
     }
 
-
     private convertResponse(res: Response): ResponseWrapper {
         const jsonResponse = res.json();
         for (let i = 0; i < jsonResponse.length; i++) {
             this.convertItemFromServer(jsonResponse[i]);
         }
-        return new ResponseWrapper(res.headers, jsonResponse);
+        return new ResponseWrapper(res.headers, jsonResponse, res.status);
     }
 
     private convertItemFromServer(entity: any) {
@@ -58,6 +54,5 @@ export class MessagesService {
         copy.sentTime = this.dateUtils.toDate(message.sentTime);
         return copy;
     }
-
 
 }
