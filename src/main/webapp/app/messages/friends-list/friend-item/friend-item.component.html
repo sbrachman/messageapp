@@ -7,5 +7,8 @@
         <h6 class="mb-1">{{friend.login}}</h6>
         <small>{{friend.messagetime | date:'shortDate'}}</small>
     </div>
-    <small class="mb-1">{{friend.message}}</small>
+    <small class="mb-1" [ngClass]="{boldfont: friend.delivered===false}">
+        <p>{{friend.message}}</p>
+    </small>
+
 </a>

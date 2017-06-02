@@ -5,7 +5,7 @@ import {ResponseWrapper} from '../../shared/model/response-wrapper.model';
 import {AlertService} from 'ng-jhipster';
 
 @Component({
-  selector: 'app-friends-list',
+  selector: 'jhi-friends-list',
   templateUrl: './friends-list.component.html',
   styles: [],
 
@@ -20,8 +20,6 @@ export class FriendsListComponent implements OnInit {
     this.loadAll();
   }
 
-
-
   loadAll() {
       this.friendService.query().subscribe(
           (res: ResponseWrapper) => this.onSuccess(res.json, res.headers),
@@ -29,11 +27,7 @@ export class FriendsListComponent implements OnInit {
       );
   }
 
-
-
   private onSuccess(data, headers) {
-      // this.links = this.parseLinks.parse(headers.get('link'));
-      // this.totalItems = headers.get('X-Total-Count');
       this.friends = [];
       for (let i = 0; i < data.length; i++) {
           this.friends.push(data[i]);

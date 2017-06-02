@@ -31,6 +31,8 @@ public class Message implements Serializable {
     @ManyToOne
     private User receiver;
 
+    private boolean delivered = false;
+
     public Long getId() {
         return id;
     }
@@ -89,6 +91,14 @@ public class Message implements Serializable {
 
     public void setReceiver(User user) {
         this.receiver = user;
+    }
+
+    public boolean isDelivered() {
+        return delivered;
+    }
+
+    public void setDelivered(boolean delivered) {
+        this.delivered = delivered;
     }
 
     @PrePersist

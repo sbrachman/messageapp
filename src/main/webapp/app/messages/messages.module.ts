@@ -12,10 +12,6 @@ import {FriendService} from './friends-list/friend.service';
 import {messagesRoute} from './messages.route';
 import {ConversationComponent} from './conversation/conversation.component';
 
-
-
-
-
 @NgModule({
   imports: [
     JhipmessageappSharedModule,

@@ -5,12 +5,8 @@ import {ResponseWrapper} from '../../shared/model/response-wrapper.model';
 import {Message} from '../message.model';
 import {AlertService} from 'ng-jhipster';
 
-
-
-
-
 @Component({
-  selector: 'app-conversation',
+  selector: 'jhi-conversation',
   templateUrl: './conversation.component.html',
   styleUrls: ['./conversation.component.css']
 })
@@ -41,7 +37,6 @@ export class ConversationComponent implements OnInit {
       );
   }
 
-
   loadAll() {
     this.messagesService.query(this.login).subscribe(
       (res: ResponseWrapper) => this.onSuccess(res.json, res.headers),
@@ -50,16 +45,17 @@ export class ConversationComponent implements OnInit {
   }
 
   onMessageSend() {
-    this.messagesService.create({messageText: this.typedText, senderLogin: '',
-      receiverLogin: '', sentTime: null}, this.login).subscribe(
-        (res: ResponseWrapper) => {
-          this.messages.push(res.json);
-        },
-        (res: ResponseWrapper) => console.log(res.headers)
-    );
-    this.typedText = '';
+      if (this.typedText.length > 1) {
+          this.messagesService.create({messageText: this.typedText, senderLogin: '',
+              receiverLogin: '', sentTime: null, delivered: false}, this.login).subscribe(
+              (res: ResponseWrapper) => {
+                  this.messages.push(res.json);
+              },
+              (res: ResponseWrapper) => console.log(res.headers)
+          );
+          this.typedText = '';
+      }
   }
-
 
   private onSuccess(data, headers) {
     for (let i = 0; i < data.length; i++) {
@@ -70,6 +66,5 @@ export class ConversationComponent implements OnInit {
   private onError(error) {
     this.alertService.error(error.message, null, null);
   }
-
 
 }

@@ -33,7 +33,7 @@ public interface MessageRepository extends JpaRepository<Message,Long> {
 
 
     @Query(value =
-        "SELECT u.login as login, m.message_text as message, f.lstmsgtime as messagetime FROM" +
+        "SELECT m.delivered as delivered, u.login as login, m.message_text as message, f.lstmsgtime as messagetime FROM" +
             " (SELECT r.interlocutor_id as interlocutorid, max(r.lastmsgtime) as lstmsgtime" +
             " FROM" +
             " ((SELECT message.sender_id as interlocutor_id, max(message.sent_time) as lastmsgtime, message.message_text as text" +
@@ -45,7 +45,7 @@ public interface MessageRepository extends JpaRepository<Message,Long> {
             " FROM MESSAGE" +
             " WHERE message.sender_id = ?1" +
             " GROUP BY interlocutor_id, text)) as r" +
-            " GROUP BY r.interlocutor_id) as f LEFT JOIN message m on f.lstmsgtime = m.sent_time left join jhi_user u on u.id = interlocutorid" +
+            " GROUP BY r.interlocutor_id) as f LEFT JOIN message m on f.lstmsgtime = m.sent_time LEFT JOIN jhi_user u on u.id = interlocutorid" +
             " ORDER BY messagetime DESC",
         nativeQuery = true)
     List<LatestUserMessage> getLastInterlocutorsWithMsg(Long currentUserId);

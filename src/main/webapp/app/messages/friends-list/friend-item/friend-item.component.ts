@@ -2,9 +2,9 @@ import {Component, Input, OnInit} from '@angular/core';
 import {Friend} from './friend.model';
 
 @Component({
-  selector: 'app-friend-item',
+  selector: 'jhi-friend-item',
   templateUrl: './friend-item.component.html',
-  styles: []
+  styleUrls: ['./friend.component.css']
 })
 export class FriendItemComponent implements OnInit {
 
@@ -16,7 +16,5 @@ export class FriendItemComponent implements OnInit {
 
   ngOnInit() {
   }
-
-
 
 }
