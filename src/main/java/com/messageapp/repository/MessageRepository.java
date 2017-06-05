@@ -1,6 +1,7 @@
 package com.messageapp.repository;
 
 import com.messageapp.domain.Message;
+import com.messageapp.domain.User;
 import com.messageapp.service.dto.LatestUserMessage;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -31,6 +32,12 @@ public interface MessageRepository extends JpaRepository<Message,Long> {
     List<Message> findMessagesForConversation(@Param("interlocutorLogin") String interlocutorLogin);
 
 
+    @Query("select m from Message m " +
+            "where m.receiver.login = ?#{principal.username} " +
+            "and m.sender.login = :interlocutorLogin " +
+            "and m.delivered = false")
+    List<Message> getUndelivered(@Param("interlocutorLogin") String interlocutorLogin);
+
 
     @Query(value =
         "SELECT m.delivered as delivered, u.login as login, m.message_text as message, f.lstmsgtime as messagetime FROM" +
@@ -50,14 +57,5 @@ public interface MessageRepository extends JpaRepository<Message,Long> {
         nativeQuery = true)
     List<LatestUserMessage> getLastInterlocutorsWithMsg(Long currentUserId);
 
-
-    //UNUSED
-    //Using nativeQuery because lack of limitation in JPQL
-    @Query(value = "SELECT * FROM Message " +
-            "WHERE sender_id = ?1 AND receiver_id = ?2 " +
-            "OR sender_id = ?2 AND receiver_id = ?1 " +
-            "ORDER BY sent_time DESC " +
-            "LIMIT 1", nativeQuery = true)
-    Message findLatestMessageForConversation(Long userId, Long interlocutorId);
 
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import {Friend} from './friend-item/friend.model';
 import {FriendService} from './friend.service';
 import {ResponseWrapper} from '../../shared/model/response-wrapper.model';
@@ -10,14 +10,20 @@ import {AlertService} from 'ng-jhipster';
   styles: [],
 
 })
-export class FriendsListComponent implements OnInit {
+export class FriendsListComponent implements OnInit, OnDestroy {
    friends: Friend[];
+   interval: any;
 
   constructor(private friendService: FriendService,
               private alertService: AlertService) { }
 
   ngOnInit() {
     this.loadAll();
+    this.enablePullingFriends();
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.interval);
   }
 
   loadAll() {
@@ -27,11 +33,13 @@ export class FriendsListComponent implements OnInit {
       );
   }
 
+  enablePullingFriends() {
+    clearInterval(this.interval);
+    this.interval = setInterval(() => this.loadAll(), 5000);
+  }
+
   private onSuccess(data, headers) {
-      this.friends = [];
-      for (let i = 0; i < data.length; i++) {
-          this.friends.push(data[i]);
-      }
+    this.friends = data;
   }
 
   private onError(error) {

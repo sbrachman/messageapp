@@ -7,7 +7,7 @@ import {MessagesComponent} from './messages.component';
 import {MdChipsModule} from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {FriendItemComponent} from './friends-list/friend-item/friend-item.component';
-import {MessagesService} from './messages.service';
+import {ConversationService} from './conversation/conversation.service';
 import {FriendService} from './friends-list/friend.service';
 import {messagesRoute} from './messages.route';
 import {ConversationComponent} from './conversation/conversation.component';
@@ -27,7 +27,7 @@ import {ConversationComponent} from './conversation/conversation.component';
     FriendItemComponent
   ],
   providers: [
-    MessagesService,
+    ConversationService,
     FriendService
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

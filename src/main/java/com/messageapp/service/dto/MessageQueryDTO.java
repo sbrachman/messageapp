@@ -10,6 +10,7 @@ public class MessageQueryDTO {
     private String senderLogin;
     private String receiverLogin;
     private Instant sentTime;
+    private boolean delivered;
 
 
     public String getMessageText() {
@@ -42,5 +43,13 @@ public class MessageQueryDTO {
 
     public void setSentTime(Instant sentTime) {
         this.sentTime = sentTime;
+    }
+
+    public boolean isDelivered() {
+        return delivered;
+    }
+
+    public void setDelivered(boolean delivered) {
+        this.delivered = delivered;
     }
 }
