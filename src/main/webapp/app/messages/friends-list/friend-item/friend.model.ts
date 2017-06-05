@@ -1,14 +1,16 @@
 export class Friend {
 
     public login: string;
-    public messagetime: any;
+    public messageTime: any;
     public lastMessage: string;
-    public delivered: boolean;
+    public lastMessageSenderId: number;
+    public messageDelivered: boolean;
 
-    constructor(login: string, messagetime: any, lastMessage: string, delivered: boolean) {
+    constructor(login: string, messageTime: any, lastMessage: string, lastMessageSenderId: number, messageDelivered: boolean) {
         this.login = login;
-        this.messagetime = messagetime;
+        this.messageTime = messageTime;
         this.lastMessage = lastMessage;
-        this.delivered = delivered;
+        this.lastMessageSenderId = lastMessageSenderId;
+        this.messageDelivered = messageDelivered;
     }
 }

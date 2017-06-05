@@ -4,8 +4,6 @@ import {MessagesComponent} from './messages.component';
 import {UserRouteAccessService} from '../shared/auth/user-route-access-service';
 import {ConversationComponent} from './conversation/conversation.component';
 
-
-
 export const messagesRoute: Routes = [
   {
     path: 'messages',
@@ -20,5 +18,3 @@ export const messagesRoute: Routes = [
     ]
   },
 ];
-
-

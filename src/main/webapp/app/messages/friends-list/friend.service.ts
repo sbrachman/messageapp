@@ -28,8 +28,8 @@ export class FriendService {
     }
 
     private convertItemFromServer(friend: Friend) {
-        friend.messagetime = this.dateUtils
-            .convertDateTimeFromServer(friend.messagetime);
+        friend.messageTime = this.dateUtils
+            .convertDateTimeFromServer(friend.messageTime);
     }
 
 }

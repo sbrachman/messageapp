@@ -25,7 +25,7 @@ public interface MessageRepository extends JpaRepository<Message,Long> {
     List<Message> findByReceiverIsCurrentUser();
 
 
-    @Query(value = "select m from Message m where" +
+    @Query("select m from Message m where" +
             " m.receiver.login = ?#{principal.username} and m.sender.login = :interlocutorLogin" +
             " or m.receiver.login = :interlocutorLogin and m.sender.login = ?#{principal.username}" +
             " order by m.sentTime desc")
@@ -35,13 +35,14 @@ public interface MessageRepository extends JpaRepository<Message,Long> {
     @Query("select m from Message m " +
             "where m.receiver.login = ?#{principal.username} " +
             "and m.sender.login = :interlocutorLogin " +
-            "and m.delivered = false")
+            "and m.delivered = false " +
+            "order by m.sentTime asc")
     List<Message> getUndelivered(@Param("interlocutorLogin") String interlocutorLogin);
 
 
     @Query(value =
-        "SELECT m.delivered as delivered, u.login as login, m.message_text as message, f.lstmsgtime as messagetime FROM" +
-            " (SELECT r.interlocutor_id as interlocutorid, max(r.lastmsgtime) as lstmsgtime" +
+        "SELECT m.sender_id as lastMessageSenderId, u.login as login, m.message_text as message, m.delivered as messageDelivered, f.lastmsgtime as messageTime FROM" +
+            " (SELECT r.interlocutor_id as interlocutorid, max(r.lastmsgtime) as lastmsgtime" +
             " FROM" +
             " ((SELECT message.sender_id as interlocutor_id, max(message.sent_time) as lastmsgtime, message.message_text as text" +
             " FROM MESSAGE" +
@@ -52,7 +53,7 @@ public interface MessageRepository extends JpaRepository<Message,Long> {
             " FROM MESSAGE" +
             " WHERE message.sender_id = ?1" +
             " GROUP BY interlocutor_id, text)) as r" +
-            " GROUP BY r.interlocutor_id) as f LEFT JOIN message m on f.lstmsgtime = m.sent_time LEFT JOIN jhi_user u on u.id = interlocutorid" +
+            " GROUP BY r.interlocutor_id) as f LEFT JOIN message m on f.lastmsgtime = m.sent_time LEFT JOIN jhi_user u on u.id = interlocutorid" +
             " ORDER BY messagetime DESC",
         nativeQuery = true)
     List<LatestUserMessage> getLastInterlocutorsWithMsg(Long currentUserId);

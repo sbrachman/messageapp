@@ -4,12 +4,14 @@ import java.time.Instant;
 
 public interface LatestUserMessage {
 
-    String getDelivered();
+    boolean getMessageDelivered();
 
     String getLogin();
 
     String getMessage();
 
-    Instant getMessagetime();
+    Long getLastMessageSenderId();
+
+    Instant getMessageTime();
 
 }

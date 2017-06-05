@@ -8,6 +8,7 @@ import com.messageapp.service.dto.LatestUserMessage;
 import com.messageapp.service.dto.MessageCreateDTO;
 import com.messageapp.service.dto.MessageQueryDTO;
 import com.messageapp.service.mapper.MessageMapper;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -23,6 +24,7 @@ import java.util.Optional;
 import java.util.concurrent.Future;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 @Service
 public class MessageService {
@@ -44,7 +46,7 @@ public class MessageService {
 
     @Transactional
     public List<MessageQueryDTO> getMessagesForConversation(String interlocutorLogin){
-        getUndelivered(interlocutorLogin);
+        getUndeliveredAndSetAsDelivered(interlocutorLogin);
         List<Message> messages = messageRepository.findMessagesForConversation(interlocutorLogin);
         Collections.reverse(messages);
         return mapMessagesListToDTO(messages);
@@ -52,7 +54,7 @@ public class MessageService {
 
     @Transactional
     public Optional<List<MessageQueryDTO>> checkForNewMessages(String interlocutorLogin) {
-        List<Message> undelivered = getUndelivered(interlocutorLogin);
+        List<Message> undelivered = getUndeliveredAndSetAsDelivered(interlocutorLogin);
         if(!undelivered.isEmpty()){
             return Optional.of(mapMessagesListToDTO(undelivered));
         } else {
@@ -61,14 +63,16 @@ public class MessageService {
     }
 
     public List<LatestUserMessage> getFriendsWithLastMessage(Long loggedUserId) {
-        List<LatestUserMessage> latestUserMessages = messageRepository.getLastInterlocutorsWithMsg(loggedUserId);
+        List<LatestUserMessage> latestUserMessages
+                = messageRepository.getLastInterlocutorsWithMsg(loggedUserId);
         return latestUserMessages;
     }
 
     @Transactional
-    private List<Message> getUndelivered(String interlocutorLogin){
+    private List<Message> getUndeliveredAndSetAsDelivered(String interlocutorLogin){
         List<Message> undelivered = messageRepository.getUndelivered(interlocutorLogin);
         undelivered.forEach(message -> message.setDelivered(true));
+        messageRepository.save(undelivered);
         return undelivered;
     }
 
