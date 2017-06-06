@@ -17,9 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 
 @RunWith(SpringRunner.class)
@@ -31,7 +29,8 @@ public class LatestInterlocutorsMessageTest {
     @Autowired
     private MessageRepository messageRepository;
 
-    @Autowired UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     private static Message defaultMessage;
 
@@ -60,11 +59,25 @@ public class LatestInterlocutorsMessageTest {
 
         //when
         List<LatestUserMessage> listForUser1 = messageRepository.getLastInterlocutorsWithMsg(1L);
-        String returnedMessage = listForUser1.get(0).getMessage();
+        LatestUserMessage returned = listForUser1.get(0);
 
 
         //then
-        assertEquals(defaultMessage.getMessageText(), returnedMessage);
+        assertEquals(defaultMessage.getMessageText(), returned.getMessage());
+        assertEquals(defaultMessage.getSentTime(), returned.getMessageTime());
+        assertEquals(defaultMessage.getSender().getId(), returned.getLastMessageSenderId());
+    }
+
+    @Test
+    public void shouldReturnUndeliveredMessage(){
+        //given
+        messageRepository.save(defaultMessage);
+
+        //when
+        List<LatestUserMessage> listForUser1 = messageRepository.getLastInterlocutorsWithMsg(1L);
+
+        //then
+        assertFalse(listForUser1.get(0).getMessageDelivered());
     }
 
     @Test

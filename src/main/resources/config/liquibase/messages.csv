@@ -1,24 +1,24 @@
-message_text;sent_time;sender_id;receiver_id
-Message from system to anonymoususer;2015-01-14T15:01:21Z;1;2
-Message from system to admin;2015-02-05T12:47:29Z;1;3
-From system to user2;2015-02-12T14:26:58Z;1;5
-From anonymoususer to user;2015-02-15T09:49:40Z;2;4
-From anonymoususer to system;2015-03-05T00:37:14Z;2;1
-From user2 to system;2015-05-17T13:39:14Z;5;1
-From admin to anonymoususer;2015-06-25T09:20:20Z;3;2
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis finibus neque nisi, et porttitor lacus finibus nec. Nunc eleifend magna dignissim ipsum pellentesque aliquet. Nunc auctor imperdiet risus, sed tincidunt quam viverra et. Duis id leo at turpis sagittis dapibus. ;2015-09-02T22:50:12Z;4;3
-From user to anonymoususer;2015-09-22T18:00:56Z;4;2
-From user2 to user;2015-10-20T22:01:38Z;5;4
-From system to user2;2015-10-30T23:16:06Z;1;5
-From user to system;2015-12-03T17:30:32Z;4;1
-From anonymoususer to user2;2015-12-27T20:40:13Z;2;5
-From system to user;2016-03-22T11:10:47Z;1;4
-From admin to anonymoususer;2016-04-04T15:23:06Z;3;2
-From anonymoususer to user;2016-04-26T13:41:06Z;2;4
-From admin to user;2016-11-29T18:10:02Z;3;4
-From system to admin;2016-12-02T16:48:03Z;1;3
-From system to anonymoususer;2017-01-21T07:07:46Z;1;2
-From system to admin;2017-05-11T19:20:15Z;1;3
+message_text;sent_time;sender_id;receiver_id;delivered
+Message from system to anonymoususer;2015-01-14T15:01:21Z;1;2;true
+Message from system to admin;2015-02-05T12:47:29Z;1;3;true
+From system to user2;2015-02-12T14:26:58Z;1;5;true
+From anonymoususer to user;2015-02-15T09:49:40Z;2;4;true
+From anonymoususer to system;2015-03-05T00:37:14Z;2;1;true
+From user2 to system;2015-05-17T13:39:14Z;5;1;true
+From admin to anonymoususer;2015-06-25T09:20:20Z;3;2;true
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis finibus neque nisi, et porttitor lacus finibus nec. Nunc eleifend magna dignissim ipsum pellentesque aliquet. Nunc auctor imperdiet risus, sed tincidunt quam viverra et. Duis id leo at turpis sagittis dapibus. ;2015-09-02T22:50:12Z;4;3;true
+From user to anonymoususer;2015-09-22T18:00:56Z;4;2;true
+From user2 to user;2015-10-20T22:01:38Z;5;4;true
+From system to user2;2015-10-30T23:16:06Z;1;5;true
+From user to system;2015-12-03T17:30:32Z;4;1;true
+From anonymoususer to user2;2015-12-27T20:40:13Z;2;5;true
+From system to user;2016-03-22T11:10:47Z;1;4;true
+From admin to anonymoususer;2016-04-04T15:23:06Z;3;2;true
+From anonymoususer to user;2016-04-26T13:41:06Z;2;4;false
+From admin to user;2016-11-29T18:10:02Z;3;4;false
+From system to admin;2016-12-02T16:48:03Z;1;3;true
+From system to anonymoususer;2017-01-21T07:07:46Z;1;2;true
+From system to admin;2017-05-11T19:20:15Z;1;3;false
 
 
 

@@ -17,20 +17,26 @@ import com.messageapp.web.rest.util.HeaderUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import javax.validation.Valid;
 import java.net.URISyntaxException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Future;
 
 
 /**
  * REST controller for managing Message.
  */
+@EnableAsync
 @RestController
 @RequestMapping("/api")
 public class MessageResource {
@@ -58,11 +64,11 @@ public class MessageResource {
     @Secured(AuthoritiesConstants.USER)
     @GetMapping("/messages")
     @Timed
-    public ResponseEntity<List<LatestUserMessage>> getInterlocutorsWithMessage() {
+    public ResponseEntity<List<LatestUserMessage>> getFriendsWithLastMessage() {
         log.debug("REST request to get a Last Interlocutors with last message in particular conversation");
         String currentUserLogin = SecurityUtils.getCurrentUserLogin();
         Long currentUserId = userRepository.findOneByLogin(currentUserLogin).get().getId();
-        return ResponseEntity.ok(messageRepository.getLastInterlocutorsWithMsg(currentUserId));
+        return ResponseEntity.ok(messageService.getFriendsWithLastMessage(currentUserId));
     }
 
 
@@ -75,6 +81,21 @@ public class MessageResource {
         } else{
             List<MessageQueryDTO> messagesForConversation = messageService.getMessagesForConversation(interlocutor.get().getLogin());
             return ResponseEntity.ok(messagesForConversation);
+        }
+    }
+
+    @Secured(AuthoritiesConstants.USER)
+    @GetMapping("/messages/{login:" + Constants.LOGIN_REGEX + "}/undelivered")
+    public ResponseEntity checkForNewMessages(@PathVariable String login)  {
+        Optional<User> interlocutor = userRepository.findOneByLogin(login);
+        if (!interlocutor.isPresent()){
+            return ResponseEntity.badRequest().body(null);
+        }
+        Optional<List<MessageQueryDTO>> undeliveredMessages = messageService.checkForNewMessages(login);
+        if (undeliveredMessages.isPresent()){
+            return ResponseEntity.ok(undeliveredMessages.get());
+        } else {
+            return ResponseEntity.noContent().build();
         }
     }
 

@@ -1,6 +1,7 @@
 package com.messageapp.repository;
 
 import com.messageapp.domain.Message;
+import com.messageapp.domain.User;
 import com.messageapp.service.dto.LatestUserMessage;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -24,17 +25,24 @@ public interface MessageRepository extends JpaRepository<Message,Long> {
     List<Message> findByReceiverIsCurrentUser();
 
 
-    @Query(value = "select m from Message m where" +
+    @Query("select m from Message m where" +
             " m.receiver.login = ?#{principal.username} and m.sender.login = :interlocutorLogin" +
             " or m.receiver.login = :interlocutorLogin and m.sender.login = ?#{principal.username}" +
             " order by m.sentTime desc")
     List<Message> findMessagesForConversation(@Param("interlocutorLogin") String interlocutorLogin);
 
 
+    @Query("select m from Message m " +
+            "where m.receiver.login = ?#{principal.username} " +
+            "and m.sender.login = :interlocutorLogin " +
+            "and m.delivered = false " +
+            "order by m.sentTime asc")
+    List<Message> getUndelivered(@Param("interlocutorLogin") String interlocutorLogin);
+
 
     @Query(value =
-        "SELECT u.login as login, m.message_text as message, f.lstmsgtime as messagetime FROM" +
-            " (SELECT r.interlocutor_id as interlocutorid, max(r.lastmsgtime) as lstmsgtime" +
+        "SELECT m.sender_id as lastMessageSenderId, u.login as login, m.message_text as message, m.delivered as messageDelivered, f.lastmsgtime as messageTime FROM" +
+            " (SELECT r.interlocutor_id as interlocutorid, max(r.lastmsgtime) as lastmsgtime" +
             " FROM" +
             " ((SELECT message.sender_id as interlocutor_id, max(message.sent_time) as lastmsgtime, message.message_text as text" +
             " FROM MESSAGE" +
@@ -45,19 +53,10 @@ public interface MessageRepository extends JpaRepository<Message,Long> {
             " FROM MESSAGE" +
             " WHERE message.sender_id = ?1" +
             " GROUP BY interlocutor_id, text)) as r" +
-            " GROUP BY r.interlocutor_id) as f LEFT JOIN message m on f.lstmsgtime = m.sent_time left join jhi_user u on u.id = interlocutorid" +
+            " GROUP BY r.interlocutor_id) as f LEFT JOIN message m on f.lastmsgtime = m.sent_time LEFT JOIN jhi_user u on u.id = interlocutorid" +
             " ORDER BY messagetime DESC",
         nativeQuery = true)
     List<LatestUserMessage> getLastInterlocutorsWithMsg(Long currentUserId);
 
-
-    //UNUSED
-    //Using nativeQuery because lack of limitation in JPQL
-    @Query(value = "SELECT * FROM Message " +
-            "WHERE sender_id = ?1 AND receiver_id = ?2 " +
-            "OR sender_id = ?2 AND receiver_id = ?1 " +
-            "ORDER BY sent_time DESC " +
-            "LIMIT 1", nativeQuery = true)
-    Message findLatestMessageForConversation(Long userId, Long interlocutorId);
 
 }

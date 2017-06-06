@@ -1,11 +1,15 @@
 <a style="cursor: pointer;"
    [routerLink] = "[friend.login]"
    routerLinkActive="active"
+   (click)="setDelivered()"
    class="list-group-item list-group-item-action flex-column align-items-start"
 >
     <div class="d-flex w-100 justify-content-between">
         <h6 class="mb-1">{{friend.login}}</h6>
-        <small>{{friend.messagetime | date:'shortDate'}}</small>
+        <small>{{friend.messageTime | date:'d/M/yyyy'}}</small>
     </div>
-    <small class="mb-1">{{friend.message}}</small>
+    <small class="mb-1" [ngClass]="{boldfont: boldStyle}">
+        <p>{{friend.message}}</p>
+    </small>
+
 </a>

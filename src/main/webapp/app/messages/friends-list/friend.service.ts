@@ -19,10 +19,6 @@ export class FriendService {
             .map((res: Response) => this.convertResponse(res));
     }
 
-    // delete(id: number): Observable<Response> {
-    //     return this.http.delete(`${this.resourceUrl}/${id}`);
-    // }
-
     private convertResponse(res: Response): ResponseWrapper {
         const jsonResponse = res.json();
         for (let i = 0; i < jsonResponse.length; i++) {
@@ -32,14 +28,8 @@ export class FriendService {
     }
 
     private convertItemFromServer(friend: Friend) {
-        friend.messagetime = this.dateUtils
-            .convertDateTimeFromServer(friend.messagetime);
+        friend.messageTime = this.dateUtils
+            .convertDateTimeFromServer(friend.messageTime);
     }
 
-    // private convert(message: Message): Message {
-    //     const copy: Message = Object.assign({}, message);
-    //
-    //     copy.sentTime = this.dateUtils.toDate(message.sentTime);
-    //     return copy;
-    // }
 }

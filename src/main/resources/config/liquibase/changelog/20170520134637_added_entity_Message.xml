@@ -41,7 +41,14 @@
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here, do not remove-->
         </createTable>
         <dropDefaultValue tableName="message" columnName="sent_time" columnDataType="datetime"/>
-
-
     </changeSet>
+
+    <changeSet id="20170206" author="szymon">
+        <addColumn tableName="message">
+            <column name="delivered" type="boolean">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

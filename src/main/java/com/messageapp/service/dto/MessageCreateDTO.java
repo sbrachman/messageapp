@@ -7,7 +7,7 @@ import javax.validation.constraints.Size;
 public class MessageCreateDTO {
 
     @NotNull
-    @Size(min = 1, max = 1000)
+    @Size(min = 2, max = 1000)
     private String messageText;
 
     private String senderLogin;
