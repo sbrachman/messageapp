@@ -150,6 +150,7 @@ public class UserResource {
      */
     @GetMapping("/users")
     @Timed
+    @Secured(AuthoritiesConstants.ADMIN)
     public ResponseEntity<List<UserDTO>> getAllUsers(@ApiParam Pageable pageable) {
         final Page<UserDTO> page = userService.getAllManagedUsers(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/users");
@@ -174,6 +175,7 @@ public class UserResource {
      */
     @GetMapping("/users/{login:" + Constants.LOGIN_REGEX + "}")
     @Timed
+    @Secured(AuthoritiesConstants.ADMIN)
     public ResponseEntity<UserDTO> getUser(@PathVariable String login) {
         log.debug("REST request to get User : {}", login);
         return ResponseUtil.wrapOrNotFound(
