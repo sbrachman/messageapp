@@ -11,6 +11,8 @@ import {ConversationService} from './conversation/conversation.service';
 import {FriendService} from './friends-list/friend.service';
 import {messagesRoute} from './messages.route';
 import {ConversationComponent} from './conversation/conversation.component';
+import {UserSearchComponent} from '../user-search/user-search.component';
+import {UserSearchResolve, UserSearchResolvePagingParams, userSearchRoute} from '../user-search/user-search.route';
 
 @NgModule({
   imports: [
@@ -24,11 +26,14 @@ import {ConversationComponent} from './conversation/conversation.component';
     MessagesComponent,
     ConversationComponent,
     FriendsListComponent,
-    FriendItemComponent
+    FriendItemComponent,
+    UserSearchComponent
   ],
   providers: [
     ConversationService,
-    FriendService
+    FriendService,
+    UserSearchResolve,
+    UserSearchResolvePagingParams
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

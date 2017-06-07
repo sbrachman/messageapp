@@ -8,6 +8,7 @@ import com.messageapp.security.AuthoritiesConstants;
 import com.messageapp.service.MailService;
 import com.messageapp.service.UserService;
 import com.messageapp.service.dto.UserDTO;
+import com.messageapp.service.dto.UserQueryDTO;
 import com.messageapp.web.rest.vm.ManagedUserVM;
 import com.messageapp.web.rest.util.HeaderUtil;
 import com.messageapp.web.rest.util.PaginationUtil;
@@ -196,5 +197,20 @@ public class UserResource {
         log.debug("REST request to delete User: {}", login);
         userService.deleteUser(login);
         return ResponseEntity.ok().headers(HeaderUtil.createAlert( "A user is deleted with identifier " + login, login)).build();
+    }
+
+    /**
+     * GET  /users : get all users views.
+     *
+     * @param pageable the pagination information
+     * @return the ResponseEntity with status 200 (OK) and with body all users
+     */
+    @GetMapping("/search")
+    @Timed
+    @Secured(AuthoritiesConstants.USER)
+    public ResponseEntity<List<UserQueryDTO>> getAllUsersView(@ApiParam Pageable pageable) {
+        final Page<UserQueryDTO> page = userService.findUsers(pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/search");
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 }

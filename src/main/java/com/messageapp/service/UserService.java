@@ -8,6 +8,7 @@ import com.messageapp.config.Constants;
 import com.messageapp.repository.UserRepository;
 import com.messageapp.security.AuthoritiesConstants;
 import com.messageapp.security.SecurityUtils;
+import com.messageapp.service.dto.UserQueryDTO;
 import com.messageapp.service.util.RandomUtil;
 import com.messageapp.service.dto.UserDTO;
 
@@ -221,6 +222,12 @@ public class UserService {
     @Transactional(readOnly = true)
     public User getUserWithAuthorities() {
         return userRepository.findOneWithAuthoritiesByLogin(SecurityUtils.getCurrentUserLogin()).orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<UserQueryDTO> findUsers(Pageable pageable) {
+        return userRepository.findAllByActivatedTrueAndLoginNot(pageable,
+                SecurityUtils.getCurrentUserLogin()).map(UserQueryDTO::new);
     }
 
     /**

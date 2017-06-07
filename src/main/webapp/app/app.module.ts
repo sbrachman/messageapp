@@ -25,6 +25,7 @@ import {
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MessagesModule} from './messages/messages.module';
 import {MdChipsModule} from '@angular/material';
+import { UserSearchComponent } from './user-search/user-search.component';
 
 @NgModule({
     imports: [
@@ -45,10 +46,6 @@ import {MdChipsModule} from '@angular/material';
         NavbarComponent,
         ErrorComponent,
         PageRibbonComponent,
-        // MessagesComponent,
-        // DialogComponent,
-        // FriendsListComponent,
-        // FriendItemComponent
     ],
     providers: [
         ProfileService,
