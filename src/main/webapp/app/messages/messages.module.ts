@@ -19,6 +19,7 @@ import {UserSearchResolve, UserSearchResolvePagingParams, userSearchRoute} from 
     JhipmessageappSharedModule,
     JhipmessageappAdminModule,
     RouterModule.forRoot(messagesRoute, { useHash: true }),
+    RouterModule.forRoot(userSearchRoute, { useHash: true }),
     BrowserAnimationsModule,
     MdChipsModule
   ],
