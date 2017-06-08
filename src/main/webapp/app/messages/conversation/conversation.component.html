@@ -9,7 +9,7 @@
         <md-chip *ngFor="let message of messages"
                  selected="{{message.senderLogin===login}}"
                  placement="bottom"
-                 ngbTooltip="{{message.senderLogin}} at {{message.sentTime | date:'HH:mm:ss d/M/yy'}}"
+                 ngbTooltip="{{message.senderLogin}} at {{message.sentTime | date:'HH:mm:ss dd/MM/yy'}}"
         >{{message.messageText}} <span class="pull-right">{{message.sentTime | date:'HH:mm'}}</span></md-chip>
 
     </md-chip-list>
