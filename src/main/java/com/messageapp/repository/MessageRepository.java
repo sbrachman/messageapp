@@ -26,10 +26,10 @@ public interface MessageRepository extends JpaRepository<Message,Long> {
 
 
     @Query("select m from Message m where" +
-            " m.receiver.login = ?#{principal.username} and m.sender.login = :interlocutorLogin" +
-            " or m.receiver.login = :interlocutorLogin and m.sender.login = ?#{principal.username}" +
+            " m.receiver.login = :currentUserLogin and m.sender.login = :interlocutorLogin" +
+            " or m.receiver.login = :interlocutorLogin and m.sender.login = :currentUserLogin" +
             " order by m.sentTime desc")
-    List<Message> findMessagesForConversation(@Param("interlocutorLogin") String interlocutorLogin);
+    List<Message> findMessagesForConversation(@Param("interlocutorLogin") String interlocutorLogin, @Param("currentUserLogin") String currentUserLogin);
 
 
     @Query("select m from Message m " +

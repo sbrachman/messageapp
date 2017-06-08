@@ -1,7 +1,9 @@
-package com.messageapp.repository;
+package com.messageapp.message;
 
 import com.messageapp.JhipmessageappApp;
 import com.messageapp.domain.Message;
+import com.messageapp.repository.MessageRepository;
+import com.messageapp.repository.UserRepository;
 import com.messageapp.service.dto.LatestUserMessage;
 import org.junit.Before;
 import org.junit.Test;
