@@ -1,5 +1,5 @@
 
-import { Resolve, ActivatedRouteSnapshot, RouterStateSnapshot, Routes, CanActivate } from '@angular/router';
+import {Routes} from '@angular/router';
 import {MessagesComponent} from './messages.component';
 import {UserRouteAccessService} from '../shared/auth/user-route-access-service';
 import {ConversationComponent} from './conversation/conversation.component';
@@ -16,5 +16,5 @@ export const messagesRoute: Routes = [
     children: [
       {path: ':login', component: ConversationComponent}
     ]
-  },
+  }
 ];

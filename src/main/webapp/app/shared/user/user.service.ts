@@ -9,6 +9,7 @@ import { createRequestOption } from '../model/request-util';
 @Injectable()
 export class UserService {
     private resourceUrl = 'api/users';
+    private resourceSearchUrl = 'api/search';
 
     constructor(private http: Http) { }
 
@@ -28,6 +29,12 @@ export class UserService {
         const options = createRequestOption(req);
         return this.http.get(this.resourceUrl, options)
             .map((res: Response) => this.convertResponse(res));
+    }
+
+    search(req?: any): Observable<ResponseWrapper> {
+        const options = createRequestOption(req);
+        return this.http.get(this.resourceSearchUrl, options)
+          .map((res: Response) => this.convertResponse(res));
     }
 
     delete(login: string): Observable<Response> {

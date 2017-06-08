@@ -45,10 +45,6 @@ import {MdChipsModule} from '@angular/material';
         NavbarComponent,
         ErrorComponent,
         PageRibbonComponent,
-        // MessagesComponent,
-        // DialogComponent,
-        // FriendsListComponent,
-        // FriendItemComponent
     ],
     providers: [
         ProfileService,
