@@ -4,6 +4,7 @@ package com.messageapp.service;
 import com.messageapp.domain.Message;
 import com.messageapp.domain.User;
 import com.messageapp.repository.MessageRepository;
+import com.messageapp.security.SecurityUtils;
 import com.messageapp.service.dto.LatestUserMessage;
 import com.messageapp.service.dto.MessageCreateDTO;
 import com.messageapp.service.dto.MessageQueryDTO;
@@ -47,8 +48,7 @@ public class MessageService {
     @Transactional
     public List<MessageQueryDTO> getMessagesForConversation(String interlocutorLogin){
         getUndeliveredAndSetAsDelivered(interlocutorLogin);
-        List<Message> messages = messageRepository.findMessagesForConversation(interlocutorLogin);
-        Collections.reverse(messages);
+        List<Message> messages = messageRepository.findMessagesForConversation(interlocutorLogin, SecurityUtils.getCurrentUserLogin());
         return mapMessagesListToDTO(messages);
     }
 

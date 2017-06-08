@@ -37,6 +37,7 @@ export class ConversationService {
             for (let i = 0; i < jsonResponse.length; i++) {
                 this.convertItemFromServer(jsonResponse[i]);
             }
+            jsonResponse.reverse();
         }
         return new ResponseWrapper(res.headers, jsonResponse, res.status);
     }
