@@ -33,11 +33,11 @@ public interface MessageRepository extends JpaRepository<Message,Long> {
 
 
     @Query("select m from Message m " +
-            "where m.receiver.login = ?#{principal.username} " +
+            "where m.receiver.login = :currentUserLogin " +
             "and m.sender.login = :interlocutorLogin " +
             "and m.delivered = false " +
             "order by m.sentTime asc")
-    List<Message> getUndelivered(@Param("interlocutorLogin") String interlocutorLogin);
+    List<Message> getUndelivered(@Param("interlocutorLogin") String interlocutorLogin, @Param("currentUserLogin") String currentUserLogin);
 
 
     @Query(value =

@@ -1,4 +1,4 @@
-package com.messageapp.message;
+package com.messageapp.repository.message;
 
 import com.messageapp.JhipmessageappApp;
 import com.messageapp.domain.Message;
@@ -15,11 +15,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import static org.junit.Assert.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 @RunWith(SpringRunner.class)
@@ -51,7 +50,7 @@ public class LatestInterlocutorsMessageTest {
         List<LatestUserMessage> latest = messageRepository.getLastInterlocutorsWithMsg(1L);
 
         //then
-        assertNotNull(latest);
+        assertThat(latest).isNotNull();
     }
 
     @Test
@@ -63,11 +62,10 @@ public class LatestInterlocutorsMessageTest {
         List<LatestUserMessage> listForUser1 = messageRepository.getLastInterlocutorsWithMsg(1L);
         LatestUserMessage returned = listForUser1.get(0);
 
-
         //then
-        assertEquals(defaultMessage.getMessageText(), returned.getMessage());
-        assertEquals(defaultMessage.getSentTime(), returned.getMessageTime());
-        assertEquals(defaultMessage.getSender().getId(), returned.getLastMessageSenderId());
+        assertThat(defaultMessage.getMessageText()).isEqualTo(returned.getMessage());
+        assertThat(defaultMessage.getSentTime()).isEqualTo(returned.getMessageTime());
+        assertThat(defaultMessage.getSender().getId()).isEqualTo(returned.getLastMessageSenderId());
     }
 
     @Test
@@ -79,7 +77,7 @@ public class LatestInterlocutorsMessageTest {
         List<LatestUserMessage> listForUser1 = messageRepository.getLastInterlocutorsWithMsg(1L);
 
         //then
-        assertFalse(listForUser1.get(0).getMessageDelivered());
+        assertThat(listForUser1.get(0).getMessageDelivered()).isFalse();
     }
 
     @Test
@@ -98,8 +96,8 @@ public class LatestInterlocutorsMessageTest {
         String lastInterlocutorForUser4 = listForUser4.get(0).getLogin();
 
         //then
-        assertEquals(lastInterlocutorForUser2, userRepository.findOne(4L).getLogin());
-        assertEquals(lastInterlocutorForUser4, userRepository.findOne(2L).getLogin());
+        assertThat(lastInterlocutorForUser2).isEqualTo(userRepository.findOne(4L).getLogin());
+        assertThat(lastInterlocutorForUser4).isEqualTo(userRepository.findOne(2L).getLogin());
     }
 
 
@@ -111,10 +109,9 @@ public class LatestInterlocutorsMessageTest {
             contactLoginList.add(l.getLogin());
         }
 
-        Set<String> contactLoginListWithoutDuplicates  = new HashSet<>(contactLoginList);
 
         //then
-        assertEquals(contactLoginList.size(), contactLoginListWithoutDuplicates.size());
+        assertThat(contactLoginList).doesNotHaveDuplicates();
     }
 
 

@@ -79,7 +79,9 @@ public class MessageResource {
         if (!interlocutor.isPresent()){
             return ResponseEntity.badRequest().body(null);
         } else{
-            List<MessageQueryDTO> messagesForConversation = messageService.getMessagesForConversation(interlocutor.get().getLogin());
+            String currentUserLogin = SecurityUtils.getCurrentUserLogin();
+            List<MessageQueryDTO> messagesForConversation =
+                    messageService.getMessagesForConversation(interlocutor.get().getLogin(), currentUserLogin);
             return ResponseEntity.ok(messagesForConversation);
         }
     }
@@ -89,13 +91,18 @@ public class MessageResource {
     public ResponseEntity checkForNewMessages(@PathVariable String login)  {
         Optional<User> interlocutor = userRepository.findOneByLogin(login);
         if (!interlocutor.isPresent()){
-            return ResponseEntity.badRequest().body(null);
-        }
-        Optional<List<MessageQueryDTO>> undeliveredMessages = messageService.checkForNewMessages(login);
-        if (undeliveredMessages.isPresent()){
-            return ResponseEntity.ok(undeliveredMessages.get());
+            return ResponseEntity.badRequest()
+                    .headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "usernotexists",
+                            "Interlocutor does not exist")).body(null);
         } else {
-            return ResponseEntity.noContent().build();
+            String currentUserLogin = SecurityUtils.getCurrentUserLogin();
+            Optional<List<MessageQueryDTO>> undeliveredMessages =
+                    messageService.checkForNewMessages(interlocutor.get().getLogin(), currentUserLogin);
+            if (undeliveredMessages.isPresent()){
+                return ResponseEntity.ok(undeliveredMessages.get());
+            } else {
+                return ResponseEntity.noContent().build();
+            }
         }
     }
 

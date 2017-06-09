@@ -1,4 +1,4 @@
-package com.messageapp.message;
+package com.messageapp.repository.message;
 
 
 import com.messageapp.JhipmessageappApp;
@@ -6,7 +6,6 @@ import com.messageapp.domain.Message;
 import com.messageapp.domain.User;
 import com.messageapp.repository.MessageRepository;
 import com.messageapp.repository.UserRepository;
-import com.messageapp.security.SecurityUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,7 +58,7 @@ public class FindMessagesForConversationTest {
         List<Message> messages = messageRepository.findMessagesForConversation(user1.getLogin(), user2.getLogin());
 
         //then
-        assertThat(messages.get(0).equals(defaultMessage));
+        assertThat(messages.get(0)).isEqualTo(defaultMessage);
     }
 
 
@@ -74,8 +73,8 @@ public class FindMessagesForConversationTest {
         List<Message> messagesInSenderConversation = messageRepository.findMessagesForConversation(user2.getLogin(), user1.getLogin());
 
         //then
-        assertTrue(messagesInSenderConversation.contains(defaultMessage));
-        assertTrue(messagesInReceiverConversation.contains(defaultMessage));
+        assertThat(messagesInSenderConversation.get(0)).isEqualTo(defaultMessage);
+        assertThat(messagesInReceiverConversation.get(0)).isEqualTo(defaultMessage);
     }
 
     @Test
@@ -90,8 +89,8 @@ public class FindMessagesForConversationTest {
         List<Message> messagesInSenderConversation = messageRepository.findMessagesForConversation(user2.getLogin(), user1.getLogin());
 
         //then
-        assertFalse(messagesInSenderConversation.contains(defaultMessage));
-        assertFalse(messagesInReceiverConversation.contains(defaultMessage));
+        assertThat(messagesInSenderConversation).doesNotContain(defaultMessage);
+        assertThat(messagesInReceiverConversation).doesNotContain(defaultMessage);
     }
 
 
