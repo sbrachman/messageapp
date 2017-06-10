@@ -45,12 +45,12 @@ public interface MessageRepository extends JpaRepository<Message,Long> {
             " (SELECT r.interlocutor_id as interlocutorid, max(r.lastmsgtime) as lastmsgtime" +
             " FROM" +
             " ((SELECT message.sender_id as interlocutor_id, max(message.sent_time) as lastmsgtime, message.message_text as text" +
-            " FROM MESSAGE" +
+            " FROM message" +
             " WHERE message.receiver_id = ?1" +
             " GROUP BY interlocutor_id, text)" +
             " UNION" +
             " (SELECT message.receiver_id as interlocutor_id, max(message.sent_time) as lastmsgtime, message.message_text as text" +
-            " FROM MESSAGE" +
+            " FROM message" +
             " WHERE message.sender_id = ?1" +
             " GROUP BY interlocutor_id, text)) as r" +
             " GROUP BY r.interlocutor_id) as f LEFT JOIN message m on f.lastmsgtime = m.sent_time LEFT JOIN jhi_user u on u.id = interlocutorid" +
