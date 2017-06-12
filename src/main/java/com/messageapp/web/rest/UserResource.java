@@ -4,11 +4,11 @@ import com.messageapp.config.Constants;
 import com.codahale.metrics.annotation.Timed;
 import com.messageapp.domain.User;
 import com.messageapp.repository.UserRepository;
+import com.messageapp.repository.search.UserSearchRepository;
 import com.messageapp.security.AuthoritiesConstants;
 import com.messageapp.service.MailService;
 import com.messageapp.service.UserService;
 import com.messageapp.service.dto.UserDTO;
-import com.messageapp.service.dto.UserQueryDTO;
 import com.messageapp.web.rest.vm.ManagedUserVM;
 import com.messageapp.web.rest.util.HeaderUtil;
 import com.messageapp.web.rest.util.PaginationUtil;
@@ -19,6 +19,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.query.Criteria;
+import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +32,10 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import static org.elasticsearch.index.query.QueryBuilders.*;
 
 /**
  * REST controller for managing users.
@@ -68,12 +75,18 @@ public class UserResource {
 
     private final UserService userService;
 
-    public UserResource(UserRepository userRepository, MailService mailService,
-            UserService userService) {
+    private final UserSearchRepository userSearchRepository;
 
+    private final ElasticsearchTemplate elasticsearchTemplate;
+
+    public UserResource(UserRepository userRepository, MailService mailService,
+            UserService userService, UserSearchRepository userSearchRepository,
+                        ElasticsearchTemplate elasticsearchTemplate) {
+        this.elasticsearchTemplate = elasticsearchTemplate;
         this.userRepository = userRepository;
         this.mailService = mailService;
         this.userService = userService;
+        this.userSearchRepository = userSearchRepository;
     }
 
     /**
@@ -151,7 +164,6 @@ public class UserResource {
      */
     @GetMapping("/users")
     @Timed
-    @Secured(AuthoritiesConstants.ADMIN)
     public ResponseEntity<List<UserDTO>> getAllUsers(@ApiParam Pageable pageable) {
         final Page<UserDTO> page = userService.getAllManagedUsers(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/users");
@@ -176,7 +188,6 @@ public class UserResource {
      */
     @GetMapping("/users/{login:" + Constants.LOGIN_REGEX + "}")
     @Timed
-    @Secured(AuthoritiesConstants.ADMIN)
     public ResponseEntity<UserDTO> getUser(@PathVariable String login) {
         log.debug("REST request to get User : {}", login);
         return ResponseUtil.wrapOrNotFound(
@@ -200,17 +211,21 @@ public class UserResource {
     }
 
     /**
-     * GET  /users : get all users views.
+     * SEARCH  /_search/users/:query : search for the User corresponding
+     * to the query.
      *
-     * @param pageable the pagination information
-     * @return the ResponseEntity with status 200 (OK) and with body all users
+     * @param query the query to search
+     * @return the result of the search
      */
-    @GetMapping("/search")
+    @GetMapping("/_search/users/{query}")
     @Timed
-    @Secured(AuthoritiesConstants.USER)
-    public ResponseEntity<List<UserQueryDTO>> getAllUsersView(@ApiParam Pageable pageable) {
-        final Page<UserQueryDTO> page = userService.findUsers(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/search");
+    public ResponseEntity<List<User>> search(@PathVariable String query, @ApiParam Pageable pageable) {
+        Criteria searchCriteria = new Criteria("login").fuzzy(query);
+        Page<User> page = elasticsearchTemplate.queryForPage(new CriteriaQuery(searchCriteria), User.class);
+        HttpHeaders headers = PaginationUtil.generateSearchPaginationHttpHeaders(query, page, "/api/_search/users");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+//        return StreamSupport
+//            .stream(userSearchRepository.search(queryStringQuery(query)).spliterator(), false)
+//            .collect(Collectors.toList());
     }
 }

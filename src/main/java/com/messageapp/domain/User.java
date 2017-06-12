@@ -5,6 +5,7 @@ import com.messageapp.config.Constants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.validator.constraints.Email;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -21,6 +22,7 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "jhi_user")
+@Document(indexName = "user")
 public class User extends AbstractAuditingEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;

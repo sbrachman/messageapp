@@ -6,9 +6,9 @@ import com.messageapp.repository.AuthorityRepository;
 import com.messageapp.repository.PersistentTokenRepository;
 import com.messageapp.config.Constants;
 import com.messageapp.repository.UserRepository;
+import com.messageapp.repository.search.UserSearchRepository;
 import com.messageapp.security.AuthoritiesConstants;
 import com.messageapp.security.SecurityUtils;
-import com.messageapp.service.dto.UserQueryDTO;
 import com.messageapp.service.util.RandomUtil;
 import com.messageapp.service.dto.UserDTO;
 
@@ -40,13 +40,16 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final UserSearchRepository userSearchRepository;
+
     private final PersistentTokenRepository persistentTokenRepository;
 
     private final AuthorityRepository authorityRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, PersistentTokenRepository persistentTokenRepository, AuthorityRepository authorityRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserSearchRepository userSearchRepository, PersistentTokenRepository persistentTokenRepository, AuthorityRepository authorityRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userSearchRepository = userSearchRepository;
         this.persistentTokenRepository = persistentTokenRepository;
         this.authorityRepository = authorityRepository;
     }
@@ -58,6 +61,7 @@ public class UserService {
                 // activate given user for the registration key.
                 user.setActivated(true);
                 user.setActivationKey(null);
+                userSearchRepository.save(user);
                 log.debug("Activated user: {}", user);
                 return user;
             });
@@ -108,6 +112,7 @@ public class UserService {
         authorities.add(authority);
         newUser.setAuthorities(authorities);
         userRepository.save(newUser);
+        userSearchRepository.save(newUser);
         log.debug("Created Information for User: {}", newUser);
         return newUser;
     }
@@ -137,6 +142,7 @@ public class UserService {
         user.setResetDate(Instant.now());
         user.setActivated(true);
         userRepository.save(user);
+        userSearchRepository.save(user);
         log.debug("Created Information for User: {}", user);
         return user;
     }
@@ -157,6 +163,7 @@ public class UserService {
             user.setEmail(email);
             user.setLangKey(langKey);
             user.setImageUrl(imageUrl);
+            userSearchRepository.save(user);
             log.debug("Changed Information for User: {}", user);
         });
     }
@@ -192,6 +199,7 @@ public class UserService {
     public void deleteUser(String login) {
         userRepository.findOneByLogin(login).ifPresent(user -> {
             userRepository.delete(user);
+            userSearchRepository.delete(user);
             log.debug("Deleted User: {}", user);
         });
     }
@@ -224,12 +232,6 @@ public class UserService {
         return userRepository.findOneWithAuthoritiesByLogin(SecurityUtils.getCurrentUserLogin()).orElse(null);
     }
 
-    @Transactional(readOnly = true)
-    public Page<UserQueryDTO> findUsers(Pageable pageable) {
-        return userRepository.findAllByActivatedTrueAndLoginNot(pageable,
-                SecurityUtils.getCurrentUserLogin()).map(UserQueryDTO::new);
-    }
-
     /**
      * Persistent Token are used for providing automatic authentication, they should be automatically deleted after
      * 30 days.
@@ -260,6 +262,7 @@ public class UserService {
         for (User user : users) {
             log.debug("Deleting not activated user {}", user.getLogin());
             userRepository.delete(user);
+            userSearchRepository.delete(user);
         }
     }
 

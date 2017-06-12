@@ -15,7 +15,7 @@
     "databaseType": "sql",
     "devDatabaseType": "h2Memory",
     "prodDatabaseType": "mysql",
-    "searchEngine": false,
+    "searchEngine": "elasticsearch",
     "messageBroker": false,
     "serviceDiscoveryType": false,
     "buildTool": "maven",

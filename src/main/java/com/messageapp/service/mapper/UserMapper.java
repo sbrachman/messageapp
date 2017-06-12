@@ -20,7 +20,7 @@ public abstract class UserMapper {
     @Autowired
     UserRepository userRepository;
 
-    UserDTO userToUserDTO(User user) {
+    public UserDTO userToUserDTO(User user) {
         return new UserDTO(user);
     }
 
@@ -36,11 +36,11 @@ public abstract class UserMapper {
     @Mapping(target = "resetKey", ignore = true)
     @Mapping(target = "resetDate", ignore = true)
     @Mapping(target = "password", ignore = true)
-    abstract User userDTOToUser(UserDTO userDTO);
+    public abstract User userDTOToUser(UserDTO userDTO);
 
-    abstract List<User> userDTOsToUsers(List<UserDTO> userDTOs);
+    public abstract List<User> userDTOsToUsers(List<UserDTO> userDTOs);
 
-    User userFromId(Long id) {
+    public User userFromId(Long id) {
         if (id == null) {
             return null;
         }
