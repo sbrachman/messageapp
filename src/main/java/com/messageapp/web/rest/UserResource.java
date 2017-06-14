@@ -9,6 +9,7 @@ import com.messageapp.security.AuthoritiesConstants;
 import com.messageapp.service.MailService;
 import com.messageapp.service.UserService;
 import com.messageapp.service.dto.UserDTO;
+import com.messageapp.service.dto.UserQueryDTO;
 import com.messageapp.web.rest.vm.ManagedUserVM;
 import com.messageapp.web.rest.util.HeaderUtil;
 import com.messageapp.web.rest.util.PaginationUtil;
@@ -217,15 +218,11 @@ public class UserResource {
      * @param query the query to search
      * @return the result of the search
      */
-    @GetMapping("/_search/users/{query}")
+    @GetMapping("/_search/users")
     @Timed
-    public ResponseEntity<List<User>> search(@PathVariable String query, @ApiParam Pageable pageable) {
-        Criteria searchCriteria = new Criteria("login").fuzzy(query);
-        Page<User> page = elasticsearchTemplate.queryForPage(new CriteriaQuery(searchCriteria), User.class);
-        HttpHeaders headers = PaginationUtil.generateSearchPaginationHttpHeaders(query, page, "/api/_search/users");
-        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
-//        return StreamSupport
-//            .stream(userSearchRepository.search(queryStringQuery(query)).spliterator(), false)
-//            .collect(Collectors.toList());
+    public ResponseEntity<List<UserQueryDTO>> search(@RequestParam String query, @ApiParam Pageable pageable) {
+        Page<UserQueryDTO> usersPage = userService.searchUsers(query, pageable);
+        HttpHeaders headers = PaginationUtil.generateSearchPaginationHttpHeaders(query, usersPage, "/api/_search/users");
+        return new ResponseEntity<>(usersPage.getContent(), headers, HttpStatus.OK);
     }
 }

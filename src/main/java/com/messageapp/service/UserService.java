@@ -9,6 +9,7 @@ import com.messageapp.repository.UserRepository;
 import com.messageapp.repository.search.UserSearchRepository;
 import com.messageapp.security.AuthoritiesConstants;
 import com.messageapp.security.SecurityUtils;
+import com.messageapp.service.dto.UserQueryDTO;
 import com.messageapp.service.util.RandomUtil;
 import com.messageapp.service.dto.UserDTO;
 
@@ -16,6 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.query.Criteria;
+import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -42,16 +46,27 @@ public class UserService {
 
     private final UserSearchRepository userSearchRepository;
 
+    private final ElasticsearchTemplate elasticsearchTemplate;
+
     private final PersistentTokenRepository persistentTokenRepository;
 
     private final AuthorityRepository authorityRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserSearchRepository userSearchRepository, PersistentTokenRepository persistentTokenRepository, AuthorityRepository authorityRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserSearchRepository userSearchRepository, PersistentTokenRepository persistentTokenRepository, AuthorityRepository authorityRepository, ElasticsearchTemplate elasticsearchTemplate) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userSearchRepository = userSearchRepository;
+        this.elasticsearchTemplate = elasticsearchTemplate;
         this.persistentTokenRepository = persistentTokenRepository;
         this.authorityRepository = authorityRepository;
+    }
+
+    public Page<UserQueryDTO> searchUsers(String query, Pageable pageable){
+        Criteria searchCriteria = new Criteria("login").fuzzy(query);
+        Page<UserQueryDTO> page = elasticsearchTemplate
+                .queryForPage(new CriteriaQuery(searchCriteria), User.class)
+                .map(UserQueryDTO::new);
+        return page;
     }
 
     public Optional<User> activateRegistration(String key) {
@@ -231,6 +246,7 @@ public class UserService {
     public User getUserWithAuthorities() {
         return userRepository.findOneWithAuthoritiesByLogin(SecurityUtils.getCurrentUserLogin()).orElse(null);
     }
+
 
     /**
      * Persistent Token are used for providing automatic authentication, they should be automatically deleted after
