@@ -4,6 +4,7 @@ import { Resolve, ActivatedRouteSnapshot, RouterStateSnapshot, Routes, CanActiva
 import { PaginationUtil } from 'ng-jhipster';
 import {Principal} from '../shared/auth/principal.service';
 import {UserSearchComponent} from './user-search.component';
+import {UserRouteAccessService} from '../shared/auth/user-route-access-service';
 
 @Injectable()
 export class UserSearchResolve implements CanActivate {
@@ -39,7 +40,9 @@ export const userSearchRoute: Routes = [
       'pagingParams': UserSearchResolvePagingParams
     },
     data: {
+      authorities: ['ROLE_USER'],
       pageTitle: 'Find Users'
-    }
+    },
+    canActivate: [UserRouteAccessService],
   }
 ];

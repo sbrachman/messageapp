@@ -1,13 +1,31 @@
 <div>
-  <h2>Find Users</h2>
+  <div class="row">
+    <div class="col-sm-12">
+      <form name="searchForm" class="form-inline">
+        <div class="input-group w-100 mt-3">
+          <input type="text" class="form-control" [(ngModel)]="currentSearch"
+                 id="currentSearch"
+                 name="currentSearch"
+                 placeholder="Search for Users">
+          <button class="input-group-addon btn btn-info" (click)="search()">
+            <span class="fa fa-search"></span>
+          </button>
+          <button class="input-group-addon btn btn-danger" (click)="clear()" *ngIf="currentSearch">
+            <span class="fa fa-trash-o"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div class="table-responsive" *ngIf="users">
     <table class="table table-hover">
       <thead>
       <tr jhiSort [(predicate)]="predicate" [(ascending)]="reverse" [callback]="transition.bind(this)">
-        <th jhiSortBy="login"><span>Login</span> <span class="fa fa-sort"></span></th>
+        <th><span>Login</span></th>
         <th><span>First Name</span></th>
         <th><span>Last Name</span></th>
-        <th jhiSortBy="createdDate"><span>Created Date</span> <span class="fa fa-sort"></span></th>
+        <th><span>Created Date</span></th>
       </tr>
       </thead>
       <tbody *ngIf ="users">

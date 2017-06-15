@@ -76,18 +76,13 @@ public class UserResource {
 
     private final UserService userService;
 
-    private final UserSearchRepository userSearchRepository;
 
-    private final ElasticsearchTemplate elasticsearchTemplate;
 
     public UserResource(UserRepository userRepository, MailService mailService,
-            UserService userService, UserSearchRepository userSearchRepository,
-                        ElasticsearchTemplate elasticsearchTemplate) {
-        this.elasticsearchTemplate = elasticsearchTemplate;
+            UserService userService) {
         this.userRepository = userRepository;
         this.mailService = mailService;
         this.userService = userService;
-        this.userSearchRepository = userSearchRepository;
     }
 
     /**
@@ -165,6 +160,7 @@ public class UserResource {
      */
     @GetMapping("/users")
     @Timed
+    @Secured(AuthoritiesConstants.ADMIN)
     public ResponseEntity<List<UserDTO>> getAllUsers(@ApiParam Pageable pageable) {
         final Page<UserDTO> page = userService.getAllManagedUsers(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/users");
@@ -212,7 +208,7 @@ public class UserResource {
     }
 
     /**
-     * SEARCH  /_search/users/:query : search for the User corresponding
+     * SEARCH  /_search/users/:query : search for the User by login corresponding
      * to the query.
      *
      * @param query the query to search
@@ -220,6 +216,7 @@ public class UserResource {
      */
     @GetMapping("/_search/users")
     @Timed
+    @Secured(AuthoritiesConstants.USER)
     public ResponseEntity<List<UserQueryDTO>> search(@RequestParam String query, @ApiParam Pageable pageable) {
         Page<UserQueryDTO> usersPage = userService.searchUsers(query, pageable);
         HttpHeaders headers = PaginationUtil.generateSearchPaginationHttpHeaders(query, usersPage, "/api/_search/users");

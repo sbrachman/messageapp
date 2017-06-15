@@ -9,7 +9,7 @@ import { createRequestOption } from '../model/request-util';
 @Injectable()
 export class UserService {
     private resourceUrl = 'api/users';
-    private resourceSearchUrl = 'api/search';
+    private resourceSearchUrl = 'api/_search/users';
 
     constructor(private http: Http) { }
 
