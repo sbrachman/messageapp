@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import {User} from '../shared/user/user.model';
 import {UserView} from './user-view.model';
 import {ITEMS_PER_PAGE} from '../shared/constants/pagination.constants';
@@ -14,7 +14,7 @@ import {ResponseWrapper} from '../shared/model/response-wrapper.model';
   templateUrl: './user-search.component.html',
   styles: []
 })
-export class UserSearchComponent implements OnInit, OnDestroy {
+export class UserSearchComponent implements OnDestroy {
 
   users: UserView[];
 
@@ -29,6 +29,7 @@ export class UserSearchComponent implements OnInit, OnDestroy {
   predicate: any;
   previousPage: any;
   reverse: any;
+  currentSearch: string;
 
   constructor(
     private userService: UserService,
@@ -50,39 +51,25 @@ export class UserSearchComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit() {
-    this.loadAll();
-    this.registerChangeInUsers();
-  }
-
   ngOnDestroy() {
     this.routeData.unsubscribe();
   }
 
-  registerChangeInUsers() {
-    this.eventManager.subscribe('userListModification', (response) => this.loadAll());
-  }
-
-  loadAll() {
-    this.userService.search({
-      page: this.page - 1,
-      size: this.itemsPerPage,
-      sort: this.sort()}).subscribe(
-      (res: ResponseWrapper) => this.onSuccess(res.json, res.headers),
-      (res: ResponseWrapper) => this.onError(res.json)
-    );
+  search() {
+    if (this.currentSearch) {
+      this.userService.search({
+        page: this.page - 1,
+        size: this.itemsPerPage,
+        // sort: this.sort(),
+        query: this.currentSearch}).subscribe(
+        (res: ResponseWrapper) => this.onSuccess(res.json, res.headers),
+        (res: ResponseWrapper) => this.onError(res.json)
+      );
+    }
   }
 
   trackIdentity(index, item: User) {
     return item.id;
-  }
-
-  sort() {
-    const result = [this.predicate + ',' + (this.reverse ? 'asc' : 'desc')];
-    if (this.predicate !== 'id') {
-      result.push('id');
-    }
-    return result;
   }
 
   loadPage(page: number) {
@@ -99,7 +86,6 @@ export class UserSearchComponent implements OnInit, OnDestroy {
         sort: this.predicate + ',' + (this.reverse ? 'asc' : 'desc')
       }
     });
-    this.loadAll();
   }
 
   private onSuccess(data, headers) {

@@ -4,6 +4,7 @@ import com.messageapp.config.Constants;
 import com.codahale.metrics.annotation.Timed;
 import com.messageapp.domain.User;
 import com.messageapp.repository.UserRepository;
+import com.messageapp.repository.search.UserSearchRepository;
 import com.messageapp.security.AuthoritiesConstants;
 import com.messageapp.service.MailService;
 import com.messageapp.service.UserService;
@@ -19,6 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.query.Criteria;
+import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +33,10 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import static org.elasticsearch.index.query.QueryBuilders.*;
 
 /**
  * REST controller for managing users.
@@ -68,9 +76,10 @@ public class UserResource {
 
     private final UserService userService;
 
+
+
     public UserResource(UserRepository userRepository, MailService mailService,
             UserService userService) {
-
         this.userRepository = userRepository;
         this.mailService = mailService;
         this.userService = userService;
@@ -176,7 +185,6 @@ public class UserResource {
      */
     @GetMapping("/users/{login:" + Constants.LOGIN_REGEX + "}")
     @Timed
-    @Secured(AuthoritiesConstants.ADMIN)
     public ResponseEntity<UserDTO> getUser(@PathVariable String login) {
         log.debug("REST request to get User : {}", login);
         return ResponseUtil.wrapOrNotFound(
@@ -200,17 +208,18 @@ public class UserResource {
     }
 
     /**
-     * GET  /users : get all users views.
+     * SEARCH  /_search/users/:query : search for the User by login corresponding
+     * to the query.
      *
-     * @param pageable the pagination information
-     * @return the ResponseEntity with status 200 (OK) and with body all users
+     * @param query the query to search
+     * @return the result of the search
      */
-    @GetMapping("/search")
+    @GetMapping("/_search/users")
     @Timed
     @Secured(AuthoritiesConstants.USER)
-    public ResponseEntity<List<UserQueryDTO>> getAllUsersView(@ApiParam Pageable pageable) {
-        final Page<UserQueryDTO> page = userService.findUsers(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/search");
-        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    public ResponseEntity<List<UserQueryDTO>> search(@RequestParam String query, @ApiParam Pageable pageable) {
+        Page<UserQueryDTO> usersPage = userService.searchUsers(query, pageable);
+        HttpHeaders headers = PaginationUtil.generateSearchPaginationHttpHeaders(query, usersPage, "/api/_search/users");
+        return new ResponseEntity<>(usersPage.getContent(), headers, HttpStatus.OK);
     }
 }

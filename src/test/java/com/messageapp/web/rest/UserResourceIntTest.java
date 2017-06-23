@@ -4,6 +4,7 @@ import com.messageapp.JhipmessageappApp;
 import com.messageapp.domain.Authority;
 import com.messageapp.domain.User;
 import com.messageapp.repository.UserRepository;
+import com.messageapp.repository.search.UserSearchRepository;
 import com.messageapp.security.AuthoritiesConstants;
 import com.messageapp.service.MailService;
 import com.messageapp.service.UserService;
@@ -18,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -75,6 +77,12 @@ public class UserResourceIntTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserSearchRepository userSearchRepository;
+
+    @Autowired
+    private ElasticsearchTemplate elasticsearchTemplate;
 
     @Autowired
     private MailService mailService;
@@ -216,6 +224,7 @@ public class UserResourceIntTest {
     public void createUserWithExistingLogin() throws Exception {
         // Initialize the database
         userRepository.saveAndFlush(user);
+        userSearchRepository.save(user);
         int databaseSizeBeforeCreate = userRepository.findAll().size();
 
         Set<String> authorities = new HashSet<>();
@@ -252,6 +261,7 @@ public class UserResourceIntTest {
     public void createUserWithExistingEmail() throws Exception {
         // Initialize the database
         userRepository.saveAndFlush(user);
+        userSearchRepository.save(user);
         int databaseSizeBeforeCreate = userRepository.findAll().size();
 
         Set<String> authorities = new HashSet<>();
@@ -288,6 +298,7 @@ public class UserResourceIntTest {
     public void getAllUsers() throws Exception {
         // Initialize the database
         userRepository.saveAndFlush(user);
+        userSearchRepository.save(user);
 
         // Get all the users
         restUserMockMvc.perform(get("/api/users?sort=id,desc")
@@ -307,6 +318,7 @@ public class UserResourceIntTest {
     public void getUser() throws Exception {
         // Initialize the database
         userRepository.saveAndFlush(user);
+        userSearchRepository.save(user);
 
         // Get the user
         restUserMockMvc.perform(get("/api/users/{login}", user.getLogin()))
@@ -332,6 +344,7 @@ public class UserResourceIntTest {
     public void updateUser() throws Exception {
         // Initialize the database
         userRepository.saveAndFlush(user);
+        userSearchRepository.save(user);
         int databaseSizeBeforeUpdate = userRepository.findAll().size();
 
         // Update the user
@@ -376,6 +389,7 @@ public class UserResourceIntTest {
     public void updateUserLogin() throws Exception {
         // Initialize the database
         userRepository.saveAndFlush(user);
+        userSearchRepository.save(user);
         int databaseSizeBeforeUpdate = userRepository.findAll().size();
 
         // Update the user
@@ -421,6 +435,7 @@ public class UserResourceIntTest {
     public void updateUserExistingEmail() throws Exception {
         // Initialize the database with 2 users
         userRepository.saveAndFlush(user);
+        userSearchRepository.save(user);
 
         User anotherUser = new User();
         anotherUser.setLogin("jhipster");
@@ -432,6 +447,7 @@ public class UserResourceIntTest {
         anotherUser.setImageUrl("");
         anotherUser.setLangKey("en");
         userRepository.saveAndFlush(anotherUser);
+        userSearchRepository.save(anotherUser);
 
         // Update the user
         User updatedUser = userRepository.findOne(user.getId());
@@ -465,6 +481,7 @@ public class UserResourceIntTest {
     public void updateUserExistingLogin() throws Exception {
         // Initialize the database
         userRepository.saveAndFlush(user);
+        userSearchRepository.save(user);
 
         User anotherUser = new User();
         anotherUser.setLogin("jhipster");
@@ -476,6 +493,7 @@ public class UserResourceIntTest {
         anotherUser.setImageUrl("");
         anotherUser.setLangKey("en");
         userRepository.saveAndFlush(anotherUser);
+        userSearchRepository.save(anotherUser);
 
         // Update the user
         User updatedUser = userRepository.findOne(user.getId());
@@ -509,6 +527,7 @@ public class UserResourceIntTest {
     public void deleteUser() throws Exception {
         // Initialize the database
         userRepository.saveAndFlush(user);
+        userSearchRepository.save(user);
         int databaseSizeBeforeDelete = userRepository.findAll().size();
 
         // Delete the user
@@ -552,75 +571,75 @@ public class UserResourceIntTest {
         assertThat(userA.hashCode()).isEqualTo(userB.hashCode());
     }
 
-//    @Test
-//    public void testUserFromId() {
-//        assertThat(userMapper.userFromId(DEFAULT_ID).getId()).isEqualTo(DEFAULT_ID);
-//        assertThat(userMapper.userFromId(null)).isNull();
-//    }
+    @Test
+    public void testUserFromId() {
+        assertThat(userMapper.userFromId(DEFAULT_ID).getId()).isEqualTo(DEFAULT_ID);
+        assertThat(userMapper.userFromId(null)).isNull();
+    }
 
-//    @Test
-//    public void testUserDTOtoUser() {
-//        UserDTO userDTO = new UserDTO(
-//            DEFAULT_ID,
-//            DEFAULT_LOGIN,
-//            DEFAULT_FIRSTNAME,
-//            DEFAULT_LASTNAME,
-//            DEFAULT_EMAIL,
-//            true,
-//            DEFAULT_IMAGEURL,
-//            DEFAULT_LANGKEY,
-//            DEFAULT_LOGIN,
-//            null,
-//            DEFAULT_LOGIN,
-//            null,
-//            Stream.of(AuthoritiesConstants.USER).collect(Collectors.toSet()));
-//        User user = userMapper.userDTOToUser(userDTO);
-//        assertThat(user.getId()).isEqualTo(DEFAULT_ID);
-//        assertThat(user.getLogin()).isEqualTo(DEFAULT_LOGIN);
-//        assertThat(user.getFirstName()).isEqualTo(DEFAULT_FIRSTNAME);
-//        assertThat(user.getLastName()).isEqualTo(DEFAULT_LASTNAME);
-//        assertThat(user.getEmail()).isEqualTo(DEFAULT_EMAIL);
-//        assertThat(user.getActivated()).isEqualTo(true);
-//        assertThat(user.getImageUrl()).isEqualTo(DEFAULT_IMAGEURL);
-//        assertThat(user.getLangKey()).isEqualTo(DEFAULT_LANGKEY);
-//        assertThat(user.getCreatedBy()).isNull();
-//        assertThat(user.getCreatedDate()).isNotNull();
-//        assertThat(user.getLastModifiedBy()).isNull();
-//        assertThat(user.getLastModifiedDate()).isNotNull();
-//        assertThat(user.getAuthorities()).extracting("name").containsExactly(AuthoritiesConstants.USER);
-//    }
+    @Test
+    public void testUserDTOtoUser() {
+        UserDTO userDTO = new UserDTO(
+            DEFAULT_ID,
+            DEFAULT_LOGIN,
+            DEFAULT_FIRSTNAME,
+            DEFAULT_LASTNAME,
+            DEFAULT_EMAIL,
+            true,
+            DEFAULT_IMAGEURL,
+            DEFAULT_LANGKEY,
+            DEFAULT_LOGIN,
+            null,
+            DEFAULT_LOGIN,
+            null,
+            Stream.of(AuthoritiesConstants.USER).collect(Collectors.toSet()));
+        User user = userMapper.userDTOToUser(userDTO);
+        assertThat(user.getId()).isEqualTo(DEFAULT_ID);
+        assertThat(user.getLogin()).isEqualTo(DEFAULT_LOGIN);
+        assertThat(user.getFirstName()).isEqualTo(DEFAULT_FIRSTNAME);
+        assertThat(user.getLastName()).isEqualTo(DEFAULT_LASTNAME);
+        assertThat(user.getEmail()).isEqualTo(DEFAULT_EMAIL);
+        assertThat(user.getActivated()).isEqualTo(true);
+        assertThat(user.getImageUrl()).isEqualTo(DEFAULT_IMAGEURL);
+        assertThat(user.getLangKey()).isEqualTo(DEFAULT_LANGKEY);
+        assertThat(user.getCreatedBy()).isNull();
+        assertThat(user.getCreatedDate()).isNotNull();
+        assertThat(user.getLastModifiedBy()).isNull();
+        assertThat(user.getLastModifiedDate()).isNotNull();
+        assertThat(user.getAuthorities()).extracting("name").containsExactly(AuthoritiesConstants.USER);
+    }
 
-//    @Test
-//    public void testUserToUserDTO() {
-//        user.setId(DEFAULT_ID);
-//        user.setCreatedBy(DEFAULT_LOGIN);
-//        user.setCreatedDate(Instant.now());
-//        user.setLastModifiedBy(DEFAULT_LOGIN);
-//        user.setLastModifiedDate(Instant.now());
-//
-//        Set<Authority> authorities = new HashSet<>();
-//        Authority authority = new Authority();
-//        authority.setName(AuthoritiesConstants.USER);
-//        authorities.add(authority);
-//        user.setAuthorities(authorities);
-//
-//        UserDTO userDTO = userMapper.userToUserDTO(user);
-//
-//        assertThat(userDTO.getId()).isEqualTo(DEFAULT_ID);
-//        assertThat(userDTO.getLogin()).isEqualTo(DEFAULT_LOGIN);
-//        assertThat(userDTO.getFirstName()).isEqualTo(DEFAULT_FIRSTNAME);
-//        assertThat(userDTO.getLastName()).isEqualTo(DEFAULT_LASTNAME);
-//        assertThat(userDTO.getEmail()).isEqualTo(DEFAULT_EMAIL);
-//        assertThat(userDTO.isActivated()).isEqualTo(true);
-//        assertThat(userDTO.getImageUrl()).isEqualTo(DEFAULT_IMAGEURL);
-//        assertThat(userDTO.getLangKey()).isEqualTo(DEFAULT_LANGKEY);
-//        assertThat(userDTO.getCreatedBy()).isEqualTo(DEFAULT_LOGIN);
-//        assertThat(userDTO.getCreatedDate()).isEqualTo(user.getCreatedDate());
-//        assertThat(userDTO.getLastModifiedBy()).isEqualTo(DEFAULT_LOGIN);
-//        assertThat(userDTO.getLastModifiedDate()).isEqualTo(user.getLastModifiedDate());
-//        assertThat(userDTO.getAuthorities()).containsExactly(AuthoritiesConstants.USER);
-//        assertThat(userDTO.toString()).isNotNull();
-//    }
+    @Test
+    public void testUserToUserDTO() {
+        user.setId(DEFAULT_ID);
+        user.setCreatedBy(DEFAULT_LOGIN);
+        user.setCreatedDate(Instant.now());
+        user.setLastModifiedBy(DEFAULT_LOGIN);
+        user.setLastModifiedDate(Instant.now());
+
+        Set<Authority> authorities = new HashSet<>();
+        Authority authority = new Authority();
+        authority.setName(AuthoritiesConstants.USER);
+        authorities.add(authority);
+        user.setAuthorities(authorities);
+
+        UserDTO userDTO = userMapper.userToUserDTO(user);
+
+        assertThat(userDTO.getId()).isEqualTo(DEFAULT_ID);
+        assertThat(userDTO.getLogin()).isEqualTo(DEFAULT_LOGIN);
+        assertThat(userDTO.getFirstName()).isEqualTo(DEFAULT_FIRSTNAME);
+        assertThat(userDTO.getLastName()).isEqualTo(DEFAULT_LASTNAME);
+        assertThat(userDTO.getEmail()).isEqualTo(DEFAULT_EMAIL);
+        assertThat(userDTO.isActivated()).isEqualTo(true);
+        assertThat(userDTO.getImageUrl()).isEqualTo(DEFAULT_IMAGEURL);
+        assertThat(userDTO.getLangKey()).isEqualTo(DEFAULT_LANGKEY);
+        assertThat(userDTO.getCreatedBy()).isEqualTo(DEFAULT_LOGIN);
+        assertThat(userDTO.getCreatedDate()).isEqualTo(user.getCreatedDate());
+        assertThat(userDTO.getLastModifiedBy()).isEqualTo(DEFAULT_LOGIN);
+        assertThat(userDTO.getLastModifiedDate()).isEqualTo(user.getLastModifiedDate());
+        assertThat(userDTO.getAuthorities()).containsExactly(AuthoritiesConstants.USER);
+        assertThat(userDTO.toString()).isNotNull();
+    }
 
     @Test
     public void testAuthorityEquals() throws Exception {
